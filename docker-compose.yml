@@ -1,0 +1,44 @@
+version: '3.5'
+services:
+  node-app:
+    container_name: node-app
+    build: .
+    command: yarn start
+    volumes:
+      - .:/home/node/app/
+      - /home/node/app/node_modules/
+    ports:
+      - '9001:9000'
+    depends_on:
+      - node-app-pg
+    environment:
+      NODE_ENV: development
+      PORT: 9000
+      LOG_PATH: /home/node/app/logs
+      POSTGRES_HOST: node-app-pg
+      POSTGRES_PASSWORD: password123
+      POSTGRES_USER: node-app-pg
+      POSTGRES_DB: node-app-pg
+    networks:
+      connections:
+        aliases:
+          - node-app
+
+  node-app-pg:
+    container_name: node-app-pg
+    image: postgres:10.6-alpine
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: password123
+      POSTGRES_USER: node-app-pg
+      POSTGRES_DB: node-app-pg
+    networks:
+      connections:
+        aliases:
+          - node-app-pg
+
+networks:
+  connections:
+    external: true
